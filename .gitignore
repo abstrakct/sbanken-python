@@ -26,5 +26,8 @@ pip-log.txt
 .tox
 nosetests.xml
 
+# Simple testing during development
+test.py
+
 # Development
 .idea

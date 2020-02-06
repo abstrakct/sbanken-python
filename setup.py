@@ -4,16 +4,16 @@ from setuptools import setup
 
 setup(
     name='sbanken',
-    version='1',
-    description='Get bank account information from Sbanken in python',
+    version='2',
+    description='Easily use Sbanken API in python',
     long_description=open('README.md').read(),
-    author='Henrik Lilleengen',
-    author_email='henrik@lilleengen.io',
-    url='https://github.com/lilleengen/sbanken',
-    download_url = 'https://github.com/lilleengen/sbanken/archive/0.1.tar.gz',
+    author='Rolf Klausen',
+    author_email='redacted@mail.com',
+    url='https://github.com/abstrakct/sbanken-python',
+    download_url = 'https://github.com/abstrakct/sbanken/archive/0.2.tar.gz',
     packages=['sbanken'],
     install_requires=[
-        'requests',
+        'certifi','chardet','idna','oauthlib','requests','requests-oauthlib','urllib3'
     ],
     classifiers=[  # https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Programming Language :: Python :: 3',

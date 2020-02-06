@@ -1,62 +1,146 @@
-import json
-
+from oauthlib.oauth2 import BackendApplicationClient
 import requests
-from requests.auth import HTTPBasicAuth
+from requests_oauthlib import OAuth2Session
+import urllib.parse
+import json
 
 
 class SbankenAPI:
-    api_root = 'https://api.sbanken.no'
+    api_root = "https://api.sbanken.no"
 
-    def __init__(self, client_id, secret):
+    def __init__(self, customer_id, client_id, secret):
+        self.customer_id = customer_id
         self.client_id = client_id
         self.secret = secret
-        self.token = False
+        self.http_session = self.create_authenticated_http_session(
+            self.client_id, self.secret
+        )
 
-    def get_token(self):
-        if not self.token:
-            token_request = requests.post(self.api_root + '/identityserver/connect/token',
-                                          {'grant_type': 'client_credentials'},
-                                          auth=HTTPBasicAuth(self.client_id, self.secret))
+    def create_authenticated_http_session(
+        self, client_id, client_secret
+    ) -> requests.Session:
+        oauth2_client = BackendApplicationClient(
+            client_id=urllib.parse.quote(client_id)
+        )
+        session = OAuth2Session(client=oauth2_client)
+        session.fetch_token(
+            token_url="https://auth.sbanken.no/identityserver/connect/token",
+            client_id=urllib.parse.quote(client_id),
+            client_secret=urllib.parse.quote(client_secret),
+        )
+        return session
 
-            self.token = json.loads(token_request.text)['access_token']
+    def get_customer_information(self):
+        response = self.http_session.get(
+            self.api_root + "/exec.customers/api/v1/customers",
+            headers={"customerId": self.customer_id},
+        ).json()
 
-        return self.token
+        if not response["isError"]:
+            return response["item"]
+        else:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
 
-    def get_header(self):
-        token = self.get_token()
-        return {
-            'Authorization': 'Bearer ' + token,
+    def get_accounts(self):
+        response = self.http_session.get(
+            self.api_root + "/exec.bank/api/v1/accounts",
+            headers={"customerId": self.customer_id},
+        ).json()
+
+        if not response["isError"]:
+            return response["items"]
+        else:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
+
+    def get_account(self, account_id):
+        response = self.http_session.get(
+            self.api_root + "/exec.bank/api/v1/accounts/" + account_id,
+            headers={"customerId": self.customer_id},
+        ).json()
+
+        if not response["isError"]:
+            return response["item"]
+        else:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
+
+    def get_transactions(self, account_id):
+        response = self.http_session.get(
+            self.api_root + "/exec.bank/api/v1/transactions/" + account_id,
+            headers={"customerId": self.customer_id},
+        ).json()
+
+        if not response["isError"]:
+            return response["items"]
+        else:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
+
+    def get_cards(self):
+        response = self.http_session.get(
+            self.api_root + "/exec.bank/api/v1/cards/",
+            headers={"customerId": self.customer_id},
+        ).json()
+
+        if not response["isError"]:
+            return response["items"]
+        else:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
+
+    def get_efakturas(self):
+        response = self.http_session.get(
+            self.api_root + "/exec.bank/api/v1/efakturas/",
+            headers={"customerId": self.customer_id},
+        ).json()
+
+        if not response["isError"]:
+            return response["items"]
+        else:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
+
+    def get_payments(self, account_id):
+        response = self.http_session.get(
+            self.api_root + "/exec.bank/api/v1/payments/" + account_id,
+            headers={"customerId": self.customer_id},
+        ).json()
+
+        if not response["isError"]:
+            return response["items"]
+        else:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
+
+    def transfer(self, fromAccountId, toAccountId, amount, message):
+        payload = {
+            "fromAccountId": fromAccountId,
+            "toAccountId": toAccountId,
+            "amount": amount,
+            "message": message,
         }
 
-    def get_accounts(self, user_id):
-        accounts_request = requests.get(self.api_root + '/bank/api/v1/accounts/' + user_id,
-                                        headers=self.get_header())
+        response = self.http_session.post(
+            self.api_root + "/exec.bank/api/v1/transfers/",
+            headers={
+                "customerId": self.customer_id,
+                "Content-Type": "application/json",
+            },
+            json=payload,
+        ).json()
 
-        return json.loads(accounts_request.text)['items']
-
-    def get_account(self, user_id, account_number):
-        accounts_request = requests.get(self.api_root + '/bank/api/v1/accounts/' + user_id + '/' + account_number,
-                                        headers=self.get_header())
-
-        return json.loads(accounts_request.text)['item']
-
-    def get_transactions(self, user_id, account_number):
-        transactions_request = requests.get(
-            self.api_root + '/bank/api/v1/transactions/' + user_id + '/' + account_number,
-            headers=self.get_header())
-
-        return json.loads(transactions_request.text)['items']
-
-    def transfer(self, user_id, account_to, account_from, amount, message):
-        transfer_request = requests.post(
-            self.api_root + '/bank/api/v1/transfers/' + user_id,
-            json={'fromAccount': account_from, 'toAccount': account_to, 'amount': amount, 'message': message},
-            headers=self.get_header())
-
-        return json.loads(transfer_request.text)
-
-    def get_customer(self, user_id):
-        accounts_request = requests.get(self.api_root + '/customers/api/v1/customers/' + user_id,
-                                        headers=self.get_header())
-        print(accounts_request)
-        return json.loads(accounts_request.text)['item']
+        if not response["isError"]:
+            return response
+        else:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
