@@ -1,7 +1,9 @@
 # sbanken
 
 A Python package for communicating with the Sbanken API. Updated to work with latest version of Sbanken's API.
+
 Forked from https://github.com/Lilleengen/sbanken-python
+
 A lot of the code in this packages comes from or is based on code from Sbanken's official example code at https://github.com/Sbanken/api-examples/tree/master/PythonSampleApplication
 
 ## Usage
