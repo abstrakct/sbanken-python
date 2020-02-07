@@ -4,15 +4,15 @@ from setuptools import setup
 
 setup(
     name="sbanken-api",
-    version="0.2",
+    version="0.2.1",
     description="Easily communicate with Sbanken API in python",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Rolf Klausen",
     author_email="redacted@mail.com",
     url="https://github.com/abstrakct/sbanken-python",
-    download_url="https://github.com/abstrakct/sbanken/archive/0.2.tar.gz",
-    packages=["sbanken"],
+    download_url="https://github.com/abstrakct/sbanken-python/archive/0.2.tar.gz",
+    packages=["sbanken-api"],
     install_requires=[
         "certifi",
         "chardet",
