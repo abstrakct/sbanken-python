@@ -13,19 +13,22 @@ class SbankenAPI:
         self.auth = auth
 
     async def async_get_accounts(self) -> List[Account]:
-        response = await self.auth.request("get", BANK_SCOPE + "/accounts/")
+        response = await self.auth.request("get", f"{BANK_SCOPE}/accounts/")
         response.raise_for_status()
-        return [
-            Account(account_data, self.auth) for account_data in await response.json()
-        ]
+        # print(await response.json())
 
-    def get_accounts(self) -> List[Account]:
-        """ Return all accounts """
-        response = self.auth.request("get", f"{BANK_SCOPE}/accounts/")
-        response.raise_for_status()
-        return [Account(account_data, self.auth) for account_data in response.json()]
+        j = await response.json()
 
-    async def get_account(self, accountId: str) -> Account:
+        return [Account(account_data, self.auth) for account_data in j["items"]]
+
+    # def get_accounts(self) -> List[Account]:
+    #    """ Return all accounts """
+    #    response = self.auth.request("get", f"{BANK_SCOPE}/accounts/")
+    #    response.raise_for_status()
+    #    return [Account(account_data, self.auth) for account_data in response.json()]
+
+    async def async_get_account(self, accountId: str) -> Account:
         """ Return the account data """
         response = await self.auth.request("get", f"{BANK_SCOPE}/accounts/{accountId}")
-        return [Account(await response.json(), self.auth)]
+        response.raise_for_status()
+        return Account(await response.json(), self.auth)

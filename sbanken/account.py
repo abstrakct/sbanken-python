@@ -6,7 +6,10 @@ class Account:
     """ Class that represents an account in Sbanken """
 
     def __init__(self, raw_data: dict, auth: Auth):
-        self.raw_data = raw_data
+        if "item" in raw_data:
+            self.raw_data = raw_data["item"]
+        else:
+            self.raw_data = raw_data
         self.auth = auth
 
     @property
