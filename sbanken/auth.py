@@ -29,8 +29,8 @@ class Auth:
         """ Return a valid access token """
         if self.token is None:
             oauth2_client = BackendApplicationClient(client_id=self.client_id)
-            self.session = OAuth2Session(client=oauth2_client)
-            self.token = self.session.fetch_token(
+            session = OAuth2Session(client=oauth2_client)
+            self.token = session.fetch_token(
                 token_url=f"{AUTH_ROOT}/identityserver/connect/token",
                 client_id=self.client_id,
                 client_secret=self.client_secret,
