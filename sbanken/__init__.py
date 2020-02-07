@@ -1,2 +1,3 @@
-from .client import SbankenAPI
-from .client import Auth
+from .auth import Auth
+from .account import Account
+from .sbanken import SbankenAPI

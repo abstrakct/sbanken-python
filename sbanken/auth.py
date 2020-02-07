@@ -5,9 +5,46 @@ from typing import Optional, Union, Callable, Dict
 from requests import Response
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import TokenExpiredError, BackendApplicationClient
+from abc import ABC, abstractmethod
+from aiohttp import ClientSession, ClientResponse
 
-API_ROOT = "https://api.sbanken.no"
-AUTH_ROOT = "https://auth.sbanken.no"
+from .const import API_ROOT, AUTH_ROOT
+
+
+class AbstractAuth:
+    """ Abstract class to make authenticated requests """
+
+    def __init__(
+        self,
+        websession: ClientSession,
+        customer_id: str = None,
+        client_id: str = None,
+        client_secret: str = None,
+    ):
+        self.websession = websession
+        self.customer_id = customer_id
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+    @abstractmethod
+    def async_get_access_token(self) -> str:
+        """ Return a valid access token """
+
+    async def request(self, method, url, **kwargs) -> ClientResponse:
+        """ Make a request """
+        headers = kwargs.get("headers")
+
+        if headers is None:
+            headers = {}
+        else:
+            headers = dict(headers)
+
+        access_token = await self.async_get_access_token()
+        headers["authorization"] = f"Bearer {access_token}"
+
+        return await self.websession.request(
+            method, f"{AUTH_ROOT}/{url}", **kwargs, headers=headers
+        )
 
 
 class Auth:
