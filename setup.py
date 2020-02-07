@@ -11,7 +11,7 @@ setup(
     author="Rolf Klausen",
     author_email="redacted@mail.com",
     url="https://github.com/abstrakct/sbanken-python",
-    download_url="https://github.com/abstrakct/sbanken-python/archive/0.2.tar.gz",
+    download_url="https://github.com/abstrakct/sbanken-python/archive/v0.2.2.tar.gz",
     packages=["sbanken"],
     install_requires=[
         "certifi",
