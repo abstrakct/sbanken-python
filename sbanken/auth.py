@@ -2,17 +2,15 @@ import json
 
 from typing import Optional, Union, Callable, Dict
 
-from requests import Response
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import TokenExpiredError, BackendApplicationClient
-from abc import ABC, abstractmethod
 from aiohttp import ClientSession, ClientResponse
 
 from .const import API_ROOT, AUTH_ROOT
 
 
 class Auth:
-    """ Abstract class to make authenticated requests """
+    """ Class for making authenticated requests """
 
     def __init__(
         self,
