@@ -15,3 +15,23 @@ class Transaction:
     @property
     def accounting_date(self) -> str:
         return self.raw_data["accountingDate"]
+
+    @property
+    def interest_date(self) -> str:
+        return self.raw_data["interestDate"]
+
+    @property
+    def amount(self) -> float:
+        return self.raw_data["amount"]
+
+    @property
+    def text(self) -> str:
+        return self.raw_data["text"]
+
+    @property
+    def transaction_type(self) -> str:
+        return self.raw_data["transactionType"]
+
+    @property
+    def transaction_code(self) -> int:
+        return self.raw_data["transactionCode"]
