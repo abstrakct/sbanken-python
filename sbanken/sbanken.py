@@ -2,7 +2,8 @@ from typing import List
 
 from .auth import Auth
 from .account import Account
-from .const import BANK_SCOPE
+from .transaction import Transaction
+from .const import BANK_SCOPE, CUSTOMER_SCOPE
 
 
 class SbankenAPI:
@@ -25,3 +26,16 @@ class SbankenAPI:
         response = await self.auth.request("get", f"{BANK_SCOPE}/accounts/{accountId}")
         response.raise_for_status()
         return Account(await response.json(), self.auth)
+
+    async def async_get_transactions(self, accountId: str):
+        """ Return transaction data for an account """
+        response = await self.auth.request(
+            "get", f"{BANK_SCOPE}/transactions/{accountId}"
+        )
+        response.raise_for_status()
+
+        j = await response.json()
+        return [
+            Transaction(transaction_data, self.auth) for transaction_data in j["items"]
+        ]
+
