@@ -3,6 +3,7 @@ from typing import List
 from .auth import Auth
 from .account import Account
 from .transaction import Transaction
+from .efaktura import Efaktura
 from .const import BANK_SCOPE, CUSTOMER_SCOPE
 
 
@@ -39,3 +40,10 @@ class SbankenAPI:
             Transaction(transaction_data, self.auth) for transaction_data in j["items"]
         ]
 
+    async def async_get_efakturas(self):
+        """ Return eFaktura (electronic bill) data for a customer """
+        response = await self.auth.request("get", f"{BANK_SCOPE}/efakturas/")
+        response.raise_for_status()
+
+        j = await response.json()
+        return [Efaktura(efaktura_data, self.auth) for efaktura_data in j["items"]]
