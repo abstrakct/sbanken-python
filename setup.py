@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="sbanken-api",
-    version="0.2.1",
+    version="0.3",
     description="Easily communicate with Sbanken API in python",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

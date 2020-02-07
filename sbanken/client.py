@@ -12,9 +12,14 @@ class SbankenAPI:
         self.customer_id = customer_id
         self.client_id = client_id
         self.secret = secret
+        self.authenticated = false
+
         self.http_session = self.create_authenticated_http_session(
             self.client_id, self.secret
         )
+
+        if self.http_session is not None:
+            self.authenticated = true
 
     def create_authenticated_http_session(
         self, client_id, client_secret
@@ -29,6 +34,9 @@ class SbankenAPI:
             client_secret=urllib.parse.quote(client_secret),
         )
         return session
+
+    def is_authenticated(self):
+        return self.authenticated
 
     def get_customer_information(self):
         response = self.http_session.get(
