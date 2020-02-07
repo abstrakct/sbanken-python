@@ -1,4 +1,4 @@
-# sbanken
+# sbanken-api
 
 A Python package for communicating with the Sbanken API. Updated to work with latest version of Sbanken's API.
 
